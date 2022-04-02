@@ -50,7 +50,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if subsliceofPath == "" {
 		subsliceofPath = "www.helenfit.com"
 	}
-	fmt.Fprintf(w, `<H1>Hi there, I love %s!</H1>`, subsliceofPath)
+	fmt.Fprintf(w, `
+	<h1>Hi there, I love %s!</h1>
+	<hr>
+	<h2>-dev branch-</h2>
+	`, subsliceofPath)
 }
 
 func main() {
