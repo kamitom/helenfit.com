@@ -4,8 +4,29 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 )
+
+type Page struct {
+	Title string
+	Body  []byte
+}
+
+// "This is a method named save that takes as its receiver p, a pointer to Page . It takes no parameters, and returns a value of type error."
+func (p *Page) save() error {
+	filename := p.Title + ".txt"
+	return os.WriteFile(filename, p.Body, 0600)
+}
+
+func loadPage(title string) (*Page, error) {
+	filename := title + ".txt"
+	body, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	return &Page{Title: title, Body: body}, nil
+}
 
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()       //解析參數，預設是不會解析的
@@ -24,8 +45,17 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
 	`) //這個寫入到 w 的是輸出到客戶端的
 }
 
+func handler(w http.ResponseWriter, r *http.Request) {
+	subsliceofPath := r.URL.Path[1:]
+	if subsliceofPath == "" {
+		subsliceofPath = "www.helenfit.com"
+	}
+	fmt.Fprintf(w, `<H1>Hi there, I love %s!</H1>`, subsliceofPath)
+}
+
 func main() {
-	http.HandleFunc("/", sayhelloName)       //設定存取的路由
+	// http.HandleFunc("/", sayhelloName)       //設定存取的路由
+	http.HandleFunc("/", handler)            //設定存取的路由
 	err := http.ListenAndServe(":8877", nil) //設定監聽的埠
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
