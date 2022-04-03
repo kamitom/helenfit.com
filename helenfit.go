@@ -57,9 +57,24 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	`, subsliceofPath)
 }
 
+func viewHandler(w http.ResponseWriter, r *http.Request) {
+	title := r.URL.Path[len("/view/"):]
+	p, _ := loadPage(title)
+	bodyContent := `
+	<h1>%s</h1>
+	<hr>
+	<div>
+	<p>www.helenfit.com - <b>%s</b></p>
+	</div>
+	
+	`
+	fmt.Fprintf(w, bodyContent, p.Title, p.Body)
+}
+
 func main() {
 	// http.HandleFunc("/", sayhelloName)       //設定存取的路由
 	http.HandleFunc("/", handler)            //設定存取的路由
+	http.HandleFunc("/view/", viewHandler)   //設定存取的路由
 	err := http.ListenAndServe(":8877", nil) //設定監聽的埠
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
